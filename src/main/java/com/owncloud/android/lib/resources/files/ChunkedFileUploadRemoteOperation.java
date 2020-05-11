@@ -60,8 +60,11 @@ public class ChunkedFileUploadRemoteOperation extends UploadFileRemoteOperation 
     private static final String TAG = ChunkedFileUploadRemoteOperation.class.getSimpleName();
     private final boolean onWifiConnection;
 
-    public ChunkedFileUploadRemoteOperation(String storagePath, String remotePath, String mimeType, String requiredEtag,
-                                            String lastModificationTimestamp,
+    public ChunkedFileUploadRemoteOperation(String storagePath,
+                                            String remotePath,
+                                            String mimeType,
+                                            String requiredEtag,
+                                            long lastModificationTimestamp,
                                             boolean onWifiConnection) {
         super(storagePath, remotePath, mimeType, requiredEtag, lastModificationTimestamp);
         this.onWifiConnection = onWifiConnection;

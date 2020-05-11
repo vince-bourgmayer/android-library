@@ -60,7 +60,7 @@ public class UploadFileRemoteOperation extends RemoteOperation {
 	protected String localPath;
 	protected String remotePath;
 	protected String mimeType;
-	private String lastModificationTimestamp;
+	private long lastModificationTimestamp;
 	PutMethod putMethod = null;
 	private String requiredEtag = null;
 
@@ -69,23 +69,22 @@ public class UploadFileRemoteOperation extends RemoteOperation {
 
 	protected RequestEntity entity = null;
 
-	public UploadFileRemoteOperation(String localPath, String remotePath, String mimeType,
-									 String lastModificationTimestamp) {
+	public UploadFileRemoteOperation(String localPath,
+									 String remotePath,
+									 String mimeType,
+									 long lastModificationTimestamp) {
 		this.localPath = localPath;
 		this.remotePath = remotePath;
 		this.mimeType = mimeType;
 
-        if (lastModificationTimestamp == null) {
-            throw new AssertionError("LastModificationTimestamp may NOT be null!");
-        }
-
-        // TODO check for max value of lastModificationTimestamp
-		
 		this.lastModificationTimestamp = lastModificationTimestamp;
 	}
 
-	public UploadFileRemoteOperation(String localPath, String remotePath, String mimeType, String requiredEtag,
-									 String lastModificationTimestamp) {
+	public UploadFileRemoteOperation(String localPath,
+									 String remotePath,
+									 String mimeType,
+									 String requiredEtag,
+									 long lastModificationTimestamp) {
 		this(localPath, remotePath, mimeType, lastModificationTimestamp);
 		this.requiredEtag = requiredEtag;
 	}
@@ -151,7 +150,7 @@ public class UploadFileRemoteOperation extends RemoteOperation {
 				putMethod.addRequestHeader(IF_MATCH_HEADER, "\"" + requiredEtag + "\"");
 			}
 			putMethod.addRequestHeader(OC_TOTAL_LENGTH_HEADER, String.valueOf(f.length()));
-            putMethod.addRequestHeader(OC_X_OC_MTIME_HEADER, lastModificationTimestamp);
+			putMethod.addRequestHeader(OC_X_OC_MTIME_HEADER, String.valueOf(lastModificationTimestamp));
 			putMethod.setRequestEntity(entity);
 			status = client.executeMethod(putMethod);
 
