@@ -57,12 +57,12 @@ public class GetMetadataRemoteOperation extends RemoteOperation {
 
     private static final String JSON_FORMAT = "?format=json";
 
-    private String fileId;
+    private final long fileId;
 
     /**
      * Constructor
      */
-    public GetMetadataRemoteOperation(String fileId) {
+    public GetMetadataRemoteOperation(long fileId) {
         this.fileId = fileId;
     }
 
