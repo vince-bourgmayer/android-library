@@ -34,8 +34,6 @@ import com.nextcloud.common.OkHttpMethodBase;
 import com.owncloud.android.lib.common.accounts.AccountUtils.AccountNotFoundException;
 import com.owncloud.android.lib.common.network.CertificateCombinedException;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.lib.resources.notifications.models.Notification;
-import com.owncloud.android.lib.resources.notifications.models.PushResponse;
 
 import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.Header;
@@ -56,8 +54,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.SSLException;
@@ -154,12 +150,7 @@ public class RemoteOperationResult<T extends Object> implements Serializable {
     @ToString.Exclude private String mLastPermanentLocation = null;
 
     @ToString.Exclude
-    private ArrayList<Object> mData;
-    @ToString.Exclude
     private T resultData;
-    @ToString.Exclude
-    private List<Notification> mNotificationData;
-    @ToString.Exclude private PushResponse mPushResponse;
 
     /**
      * Public constructor from result code.
@@ -173,7 +164,7 @@ public class RemoteOperationResult<T extends Object> implements Serializable {
         mSuccess = (code == ResultCode.OK || code == ResultCode.OK_SSL || code == ResultCode.OK_NO_SSL ||
                 code == ResultCode.OK_REDIRECT_TO_NON_SECURE_CONNECTION || code == ResultCode.ETAG_CHANGED ||
                 code == ResultCode.ETAG_UNCHANGED);
-        mData = null;
+        resultData = null;
     }
 
     private RemoteOperationResult(boolean success, int httpCode) {
@@ -478,22 +469,6 @@ public class RemoteOperationResult<T extends Object> implements Serializable {
         }
     }
 
-    /**
-     * @deprecated use setResultData() instead
-     */
-    @Deprecated
-    public void setData(ArrayList<Object> files) {
-        mData = files;
-    }
-
-    /**
-     * @deprecated use setResultData() instead
-     */
-    @Deprecated
-    public void setSingleData(Object object) {
-        mData = new ArrayList<>(Collections.singletonList(object));
-    }
-
     public void setResultData(T object) {
         resultData = object;
     }
@@ -504,63 +479,6 @@ public class RemoteOperationResult<T extends Object> implements Serializable {
         }
         return resultData;
     }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    @Deprecated
-    public ArrayList<Object> getData() {
-        if (!mSuccess) {
-            throw new RuntimeException("Accessing result data after operation failed!");
-        }
-        return mData;
-    }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    @Deprecated
-    public Object getSingleData() {
-        if (!mSuccess) {
-            throw new RuntimeException("Accessing result data after operation failed!");
-        }
-        return mData.get(0);
-    }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    public void setNotificationData(List<Notification> notifications) {
-        mNotificationData = notifications;
-    }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    public PushResponse getPushResponseData() {
-        if (!mSuccess) {
-            throw new RuntimeException("Accessing result data after operation failed!");
-        }
-        return mPushResponse;
-    }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    public void setPushResponseData(PushResponse pushResponseData) {
-        mPushResponse = pushResponseData;
-    }
-
-    /**
-     * @deprecated use getResultData() instead
-     */
-    public List<Notification> getNotificationData() {
-        if (!mSuccess) {
-            throw new RuntimeException("Accessing result data after operation failed!");
-        }
-        return mNotificationData;
-    }
-
 
     public boolean isSuccess() {
         return mSuccess;

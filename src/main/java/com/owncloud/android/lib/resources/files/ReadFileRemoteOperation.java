@@ -36,8 +36,6 @@ import org.apache.jackrabbit.webdav.DavConstants;
 import org.apache.jackrabbit.webdav.MultiStatus;
 import org.apache.jackrabbit.webdav.client.methods.PropFindMethod;
 
-import java.util.ArrayList;
-
 
 /**
  * Remote operation performing the read a file from the ownCloud server.
@@ -46,13 +44,13 @@ import java.util.ArrayList;
  * @author masensio
  */
 
-public class ReadFileRemoteOperation extends RemoteOperation {
+public class ReadFileRemoteOperation extends RemoteOperation<RemoteFile> {
 
     private static final String TAG = ReadFileRemoteOperation.class.getSimpleName();
     private static final int SYNC_READ_TIMEOUT = 40000;
     private static final int SYNC_CONNECTION_TIMEOUT = 5000;
 
-    private String mRemotePath;
+    private final String remotePath;
 
 
     /**
@@ -61,7 +59,7 @@ public class ReadFileRemoteOperation extends RemoteOperation {
      * @param remotePath Remote path of the file.
      */
     public ReadFileRemoteOperation(String remotePath) {
-        mRemotePath = remotePath;
+        this.remotePath = remotePath;
     }
 
     /**
@@ -70,16 +68,16 @@ public class ReadFileRemoteOperation extends RemoteOperation {
      * @param client Client object to communicate with the remote ownCloud server.
      */
     @Override
-    protected RemoteOperationResult run(OwnCloudClient client) {
+    protected RemoteOperationResult<RemoteFile> run(OwnCloudClient client) {
         PropFindMethod propfind = null;
-        RemoteOperationResult result = null;
+        RemoteOperationResult<RemoteFile> result;
 
         /// take the duty of check the server for the current state of the file there
         try {
             // remote request
-            propfind = new PropFindMethod(client.getWebdavUri() + WebdavUtils.encodePath(mRemotePath),
-                WebdavUtils.getFilePropSet(),    // PropFind Properties
-                DavConstants.DEPTH_0);
+            propfind = new PropFindMethod(client.getWebdavUri() + WebdavUtils.encodePath(remotePath),
+                    WebdavUtils.getFilePropSet(),    // PropFind Properties
+                    DavConstants.DEPTH_0);
             int status;
             status = client.executeMethod(propfind, SYNC_READ_TIMEOUT, SYNC_CONNECTION_TIMEOUT);
 
@@ -91,24 +89,22 @@ public class ReadFileRemoteOperation extends RemoteOperation {
                 // Parse response
                 MultiStatus resp = propfind.getResponseBodyAsMultiStatus();
                 WebdavEntry we = new WebdavEntry(resp.getResponses()[0],
-                    client.getWebdavUri().getPath());
+                        client.getWebdavUri().getPath());
                 RemoteFile remoteFile = new RemoteFile(we);
-                ArrayList<Object> files = new ArrayList<Object>();
-                files.add(remoteFile);
 
                 // Result of the operation
-                result = new RemoteOperationResult(true, propfind);
-                result.setData(files);
+                result = new RemoteOperationResult<>(true, propfind);
+                result.setResultData(remoteFile);
 
             } else {
-                result = new RemoteOperationResult(false, propfind);
+                result = new RemoteOperationResult<>(false, propfind);
                 client.exhaustResponse(propfind.getResponseBodyAsStream());
             }
 
         } catch (Exception e) {
-            result = new RemoteOperationResult(e);
-            Log_OC.e(TAG, "Read file " + mRemotePath + " failed: " + result.getLogMessage(),
-                result.getException());
+            result = new RemoteOperationResult<>(e);
+            Log_OC.e(TAG, "Read file " + remotePath + " failed: " + result.getLogMessage(),
+                    result.getException());
         } finally {
             if (propfind != null)
                 propfind.releaseConnection();
