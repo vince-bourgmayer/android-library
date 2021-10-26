@@ -26,19 +26,20 @@
  */
 package com.owncloud.android;
 
-import com.owncloud.android.lib.common.operations.RemoteOperationResult;
-import com.owncloud.android.lib.resources.status.CapabilityBooleanType;
-import com.owncloud.android.lib.resources.status.GetCapabilitiesRemoteOperation;
-import com.owncloud.android.lib.resources.status.OCCapability;
-import com.owncloud.android.lib.resources.status.OwnCloudVersion;
-
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+
+import com.owncloud.android.lib.common.operations.RemoteOperationResult;
+import com.owncloud.android.lib.resources.status.CapabilityBooleanType;
+import com.owncloud.android.lib.resources.status.GetCapabilitiesRemoteOperation;
+import com.owncloud.android.lib.resources.status.NextcloudVersion;
+import com.owncloud.android.lib.resources.status.OCCapability;
+import com.owncloud.android.lib.resources.status.OwnCloudVersion;
+
+import org.junit.Test;
 
 /**
  * Class to test GetRemoteCapabilitiesOperation
@@ -118,6 +119,25 @@ public class GetCapabilitiesIT extends AbstractIT {
         }
 
         checkCapability(capability);
+    }
+
+    @Test
+    public void testFilesSharing() {
+        // get capabilities
+        RemoteOperationResult result = new GetCapabilitiesRemoteOperation().execute(nextcloudClient);
+        assertTrue(result.isSuccess());
+        assertTrue(result.getData() != null && result.getData().size() == 1);
+
+        OCCapability capability = (OCCapability) result.getData().get(0);
+
+        // share by mail
+        if (capability.getVersion().isNewerOrEqual(NextcloudVersion.Companion.getNextcloud_23())) {
+            assertTrue(capability.getFilesSharingByMail().isTrue());
+            assertTrue(capability.getFilesSharingByMailSendPasswordByMail().isTrue());
+        } else {
+            assertTrue("Value is:" + capability.getFilesSharingByMail(), capability.getFilesSharingByMail().isTrue());
+            assertTrue(capability.getFilesSharingByMailSendPasswordByMail().isUnknown());
+        }
     }
 
     private void checkCapability(OCCapability capability) {

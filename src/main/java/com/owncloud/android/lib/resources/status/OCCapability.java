@@ -78,6 +78,8 @@ public class OCCapability {
     private CapabilityBooleanType filesSharingResharing;
     private CapabilityBooleanType filesSharingFederationOutgoing;
     private CapabilityBooleanType filesSharingFederationIncoming;
+    private CapabilityBooleanType filesSharingByMail;
+    private CapabilityBooleanType filesSharingByMailSendPasswordByMail;
 
     // Files
     private CapabilityBooleanType filesBigFileChunking;
