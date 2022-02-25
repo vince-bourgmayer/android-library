@@ -29,14 +29,12 @@ package com.owncloud.android.lib.common
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
-import lombok.ToString
 
 /**
  * Quota data model
  */
 
 @Parcelize
-@ToString
 data class Quota(
     val free: Long = 0,
     val used: Long = 0,
@@ -45,4 +43,8 @@ data class Quota(
     val quota: Long = 0,
 ) : Parcelable {
     constructor(quota: Long) : this(0, quota = quota)
+
+    override fun toString(): String {
+        return "Quota: $quota, free: $free, used: $used, total: $total, relative: $relative"
+    }
 }

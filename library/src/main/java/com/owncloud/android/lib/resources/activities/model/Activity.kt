@@ -1,6 +1,6 @@
-/*  Nextcloud Android Library is available under MIT license
- *   Copyright (C) 2017 Alejandro Bautista
+/*   Nextcloud Android Library is available under MIT license
  *
+ *   Copyright (C) 2017 Alejandro Bautista
  *   @author Alejandro Bautista
  *
  *   Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,23 +23,43 @@
  *   THE SOFTWARE.
  *
  */
-package com.owncloud.android.lib.resources.activities.model;
+package com.owncloud.android.lib.resources.activities.model
 
-import java.util.ArrayList;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.google.gson.annotations.SerializedName
+import com.owncloud.android.lib.resources.activities.models.PreviewObject
+import java.util.Date
 
 /**
- * RichElement Data Model
+ * Activity Data Model
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class RichElement {
-    private String richSubject;
-    private ArrayList<RichObject> richObjectList = new ArrayList<>();
-}
+data class Activity(
+    @SerializedName("activity_id")
+    var activityId: Int,
+    var datetime: Date,
+
+    // legacy purposes
+    var date: Date,
+    var app: String,
+    var type: String,
+    var user: String,
+
+    @SerializedName("affecteduser")
+    var affectedUser: String,
+    var subject: String,
+    var message: String,
+    var icon: String,
+    var link: String,
+
+    @SerializedName("object_type")
+    var objectType: String,
+
+    @SerializedName("object_id")
+    var objectId: String,
+
+    @SerializedName("object_name")
+    var objectName: String,
+    var previews: List<PreviewObject>,
+
+    @SerializedName("subject_rich")
+    var richSubjectElement: RichElement
+)
